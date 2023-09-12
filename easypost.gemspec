@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'easypost/version'
 
 Gem::Specification.new do |spec|
-  spec.name = 'easypost'
+  spec.name = 'easypost-v4'
   spec.version = EasyPost::VERSION
   spec.license = 'MIT'
   spec.summary = 'EasyPost Ruby Client Library'
