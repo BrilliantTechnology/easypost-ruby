@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-describe EasyPost::Services::Shipment do
-  let(:client) { EasyPost::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
+describe EasyPostV5::Services::Shipment do
+  let(:client) { EasyPostV5::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
 
   describe '.create' do
     it 'creates a shipment' do
       shipment = client.shipment.create(Fixture.full_shipment)
 
-      expect(shipment).to be_an_instance_of(EasyPost::Models::Shipment)
+      expect(shipment).to be_an_instance_of(EasyPostV5::Models::Shipment)
       expect(shipment.id).to match('shp_')
       expect(shipment.rates).not_to be_nil
       expect(shipment.options.label_format).to eq('PNG')
@@ -26,9 +26,9 @@ describe EasyPost::Services::Shipment do
 
       shipment = client.shipment.create(shipment_data)
 
-      expect(shipment).to be_an_instance_of(EasyPost::Models::Shipment)
+      expect(shipment).to be_an_instance_of(EasyPostV5::Models::Shipment)
       expect(shipment.id).to match('shp_')
-      expect(shipment.options).not_to be_nil # The EasyPost API populates some default values here
+      expect(shipment.options).not_to be_nil # The EasyPostV5 API populates some default values here
       expect(shipment.customs_info).to be_nil
       expect(shipment.reference).to be_nil
     end
@@ -39,7 +39,7 @@ describe EasyPost::Services::Shipment do
 
       shipment = client.shipment.create(shipment_data)
 
-      expect(shipment).to be_an_instance_of(EasyPost::Models::Shipment)
+      expect(shipment).to be_an_instance_of(EasyPostV5::Models::Shipment)
       expect(shipment.id).to match('shp_')
       expect(shipment.tax_identifiers[0].tax_id_type).to eq('IOSS')
     end
@@ -57,7 +57,7 @@ describe EasyPost::Services::Shipment do
         },
       )
 
-      expect(shipment).to be_an_instance_of(EasyPost::Models::Shipment)
+      expect(shipment).to be_an_instance_of(EasyPostV5::Models::Shipment)
       expect(shipment.id).to match('shp_')
       expect(shipment.from_address.id).to match('adr_')
       expect(shipment.to_address.id).to match('adr_')
@@ -68,7 +68,7 @@ describe EasyPost::Services::Shipment do
     it 'creates a shipment with carbon_offset' do
       shipment = client.shipment.create(Fixture.basic_shipment, true)
 
-      expect(shipment).to be_an_instance_of(EasyPost::Models::Shipment)
+      expect(shipment).to be_an_instance_of(EasyPostV5::Models::Shipment)
       expect(shipment.rates).not_to be_nil
 
       rate = shipment.rates.first
@@ -93,7 +93,7 @@ describe EasyPost::Services::Shipment do
       shipment = client.shipment.create(Fixture.full_shipment)
       retrieved_shipment = client.shipment.retrieve(shipment.id)
 
-      expect(retrieved_shipment).to be_an_instance_of(EasyPost::Models::Shipment)
+      expect(retrieved_shipment).to be_an_instance_of(EasyPostV5::Models::Shipment)
       expect(retrieved_shipment.id).to eq(shipment.id)
     end
   end
@@ -108,7 +108,7 @@ describe EasyPost::Services::Shipment do
 
       expect(shipments_array.count).to be <= Fixture.page_size
       expect(shipments.has_more).not_to be_nil
-      expect(shipments_array).to all(be_an_instance_of(EasyPost::Models::Shipment))
+      expect(shipments_array).to all(be_an_instance_of(EasyPostV5::Models::Shipment))
     end
 
     it 'stores the params used to retrieve the shipments' do
@@ -137,9 +137,9 @@ describe EasyPost::Services::Shipment do
 
         # Did we actually get a new page?
         expect(first_page_first_id).not_to eq(next_page_first_id)
-      rescue EasyPost::Errors::EndOfPaginationError => e
+      rescue EasyPostV5::Errors::EndOfPaginationError => e
         # If we get an error, make sure it's because there are no more pages.
-        expect(e.message).to eq(EasyPost::Constants::NO_MORE_PAGES)
+        expect(e.message).to eq(EasyPostV5::Constants::NO_MORE_PAGES)
       end
     end
   end
@@ -176,7 +176,7 @@ describe EasyPost::Services::Shipment do
 
       bought_shipment = client.shipment.buy(shipment.id, { rate: shipment.lowest_rate, with_carbon_offset: true })
 
-      expect(shipment).to be_an_instance_of(EasyPost::Models::Shipment)
+      expect(shipment).to be_an_instance_of(EasyPostV5::Models::Shipment)
       expect(shipment.rates).not_to be_nil
 
       rate = bought_shipment.rates.first
@@ -202,7 +202,7 @@ describe EasyPost::Services::Shipment do
       rates_array = regenerated_shipment.rates
 
       expect(rates_array).to be_an_instance_of(Array)
-      expect(rates_array).to all(be_an_instance_of(EasyPost::Models::Rate))
+      expect(rates_array).to all(be_an_instance_of(EasyPostV5::Models::Rate))
     end
 
     it 'regenerates rates for a shipment with carbon offset' do
@@ -331,7 +331,7 @@ describe EasyPost::Services::Shipment do
       # Test lowest rate with carrier filter (should error due to bad carrier)
       expect {
         shipment.lowest_rate(['BAD CARRIER'], [])
-      }.to raise_error(EasyPost::Errors::FilteringError, EasyPost::Constants::NO_MATCHING_RATES)
+      }.to raise_error(EasyPostV5::Errors::FilteringError, EasyPostV5::Constants::NO_MATCHING_RATES)
     end
 
     it 'tests various usage alterations of the lowest_rate method when excluding params' do
@@ -368,7 +368,7 @@ describe EasyPost::Services::Shipment do
       # Test lowest SmartRate with invalid filters (should error due to strict delivery_days)
       expect {
         client.shipment.lowest_smart_rate(shipment.id, 0, 'percentile_90')
-      }.to raise_error(EasyPost::Errors::FilteringError, EasyPost::Constants::NO_MATCHING_RATES)
+      }.to raise_error(EasyPostV5::Errors::FilteringError, EasyPostV5::Constants::NO_MATCHING_RATES)
     end
 
     it 'raises an error when no rates are found due to delivery_accuracy' do
@@ -377,7 +377,7 @@ describe EasyPost::Services::Shipment do
       # Test lowest SmartRate with invalid filters (should error due to invalid delivery_accuracy)
       expect {
         client.shipment.lowest_smart_rate(shipment.id, 3, 'BAD_ACCURACY')
-      }.to raise_error(EasyPost::Errors::InvalidParameterError)
+      }.to raise_error(EasyPostV5::Errors::InvalidParameterError)
     end
   end
 
@@ -387,7 +387,7 @@ describe EasyPost::Services::Shipment do
       smartrates = client.shipment.get_smart_rates(shipment.id)
 
       # Test lowest SmartRate with valid filters
-      lowest_smartrate = EasyPost::Util.get_lowest_smart_rate(smartrates, 2, 'percentile_90')
+      lowest_smartrate = EasyPostV5::Util.get_lowest_smart_rate(smartrates, 2, 'percentile_90')
       expect(lowest_smartrate['service']).to eq('First')
       expect(lowest_smartrate['rate']).to eq(6.07)
       expect(lowest_smartrate['carrier']).to eq('USPS')
@@ -399,8 +399,8 @@ describe EasyPost::Services::Shipment do
 
       # Test lowest SmartRate with invalid filters (should error due to strict delivery_days)
       expect {
-        EasyPost::Util.get_lowest_smart_rate(smartrates, 0, 'percentile_90')
-      }.to raise_error(EasyPost::Errors::FilteringError, EasyPost::Constants::NO_MATCHING_RATES)
+        EasyPostV5::Util.get_lowest_smart_rate(smartrates, 0, 'percentile_90')
+      }.to raise_error(EasyPostV5::Errors::FilteringError, EasyPostV5::Constants::NO_MATCHING_RATES)
     end
 
     it 'raises an error when no rates are found due to delivery_accuracy' do
@@ -409,8 +409,8 @@ describe EasyPost::Services::Shipment do
 
       # Test lowest SmartRate with invalid filters (should error due to invalid delivery_accuracy)
       expect {
-        EasyPost::Util.get_lowest_smart_rate(smartrates, 3, 'BAD_ACCURACY')
-      }.to raise_error(EasyPost::Errors::InvalidParameterError)
+        EasyPostV5::Util.get_lowest_smart_rate(smartrates, 3, 'BAD_ACCURACY')
+      }.to raise_error(EasyPostV5::Errors::InvalidParameterError)
     end
   end
 

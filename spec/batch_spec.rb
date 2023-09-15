@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-describe EasyPost::Services::Batch do
-  let(:client) { EasyPost::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
+describe EasyPostV5::Services::Batch do
+  let(:client) { EasyPostV5::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
 
   describe 'batch service' do
     it 'create a batch' do
@@ -11,7 +11,7 @@ describe EasyPost::Services::Batch do
         shipments: [Fixture.one_call_buy_shipment],
       )
 
-      expect(batch).to be_an_instance_of(EasyPost::Models::Batch)
+      expect(batch).to be_an_instance_of(EasyPostV5::Models::Batch)
       expect(batch.id).to match('batch_')
       expect(batch.shipments).not_to be_nil
     end
@@ -24,7 +24,7 @@ describe EasyPost::Services::Batch do
       )
       retrieved_batch = client.batch.retrieve(batch.id)
 
-      expect(retrieved_batch).to be_an_instance_of(EasyPost::Models::Batch)
+      expect(retrieved_batch).to be_an_instance_of(EasyPostV5::Models::Batch)
       expect(retrieved_batch.id).to eq(batch.id)
     end
   end
@@ -39,7 +39,7 @@ describe EasyPost::Services::Batch do
 
       expect(batch_array.count).to be <= Fixture.page_size
       expect(batches.has_more).not_to be_nil
-      expect(batch_array).to all(be_an_instance_of(EasyPost::Models::Batch))
+      expect(batch_array).to all(be_an_instance_of(EasyPostV5::Models::Batch))
     end
   end
 
@@ -52,7 +52,7 @@ describe EasyPost::Services::Batch do
         ],
       )
 
-      expect(batch).to be_an_instance_of(EasyPost::Models::Batch)
+      expect(batch).to be_an_instance_of(EasyPostV5::Models::Batch)
       expect(batch.id).to match('batch_')
       expect(batch.num_shipments).to eq(2)
     end
@@ -66,7 +66,7 @@ describe EasyPost::Services::Batch do
 
       bought_batch = client.batch.buy(batch.id)
 
-      expect(bought_batch).to be_an_instance_of(EasyPost::Models::Batch)
+      expect(bought_batch).to be_an_instance_of(EasyPostV5::Models::Batch)
       expect(bought_batch.num_shipments).to eq(1)
     end
   end
@@ -86,7 +86,7 @@ describe EasyPost::Services::Batch do
       batch_with_scan_form = client.batch.create_scan_form(bought_batch.id)
 
       # We can't assert anything meaningful here because the scanform gets queued for generation and may not be immediately available
-      expect(batch_with_scan_form).to be_an_instance_of(EasyPost::Models::Batch)
+      expect(batch_with_scan_form).to be_an_instance_of(EasyPostV5::Models::Batch)
     end
   end
 
@@ -125,7 +125,7 @@ describe EasyPost::Services::Batch do
       batch_with_label = client.batch.label(bought_batch.id, { file_format: 'ZPL' })
 
       # We can't assert anything meaningful here because the label gets queued for generation and may not be immediately available
-      expect(batch_with_label).to be_an_instance_of(EasyPost::Models::Batch)
+      expect(batch_with_label).to be_an_instance_of(EasyPostV5::Models::Batch)
     end
   end
 end

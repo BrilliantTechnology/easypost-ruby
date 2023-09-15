@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-describe EasyPost::Services::Pickup do
-  let(:client) { EasyPost::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
+describe EasyPostV5::Services::Pickup do
+  let(:client) { EasyPostV5::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
 
   describe '.create' do
     it 'creates a pickup' do
@@ -14,7 +14,7 @@ describe EasyPost::Services::Pickup do
 
       pickup = client.pickup.create(pickup_data)
 
-      expect(pickup).to be_an_instance_of(EasyPost::Models::Pickup)
+      expect(pickup).to be_an_instance_of(EasyPostV5::Models::Pickup)
       expect(pickup.id).to match('pickup_')
       expect(pickup.pickup_rates).not_to be_nil
     end
@@ -31,7 +31,7 @@ describe EasyPost::Services::Pickup do
 
       retrieved_pickup = client.pickup.retrieve(pickup.id)
 
-      expect(retrieved_pickup).to be_an_instance_of(EasyPost::Models::Pickup)
+      expect(retrieved_pickup).to be_an_instance_of(EasyPostV5::Models::Pickup)
       expect(retrieved_pickup.id.to_s).to eq(pickup.id.to_s)
     end
   end
@@ -46,7 +46,7 @@ describe EasyPost::Services::Pickup do
 
       expect(pickups_array.count).to be <= Fixture.page_size
       expect(pickups.has_more).not_to be_nil
-      expect(pickups_array).to all(be_an_instance_of(EasyPost::Models::Pickup))
+      expect(pickups_array).to all(be_an_instance_of(EasyPostV5::Models::Pickup))
     end
   end
 
@@ -64,9 +64,9 @@ describe EasyPost::Services::Pickup do
 
         # Did we actually get a new page?
         expect(first_page_first_id).not_to eq(next_page_first_id)
-      rescue EasyPost::Errors::EndOfPaginationError => e
+      rescue EasyPostV5::Errors::EndOfPaginationError => e
         # If we get an error, make sure it's because there are no more pages.
-        expect(e.message).to eq(EasyPost::Constants::NO_MORE_PAGES)
+        expect(e.message).to eq(EasyPostV5::Constants::NO_MORE_PAGES)
       end
     end
   end
@@ -88,7 +88,7 @@ describe EasyPost::Services::Pickup do
         },
       )
 
-      expect(bought_pickup).to be_an_instance_of(EasyPost::Models::Pickup)
+      expect(bought_pickup).to be_an_instance_of(EasyPostV5::Models::Pickup)
       expect(bought_pickup.id).to match('pickup_')
       expect(bought_pickup.confirmation).not_to be_nil
       expect(bought_pickup.status).to eq('scheduled')
@@ -104,7 +104,7 @@ describe EasyPost::Services::Pickup do
 
       bought_pickup = client.pickup.buy(pickup.id, pickup.lowest_rate)
 
-      expect(bought_pickup).to be_an_instance_of(EasyPost::Models::Pickup)
+      expect(bought_pickup).to be_an_instance_of(EasyPostV5::Models::Pickup)
       expect(bought_pickup.id).to match('pickup_')
       expect(bought_pickup.confirmation).not_to be_nil
       expect(bought_pickup.status).to eq('scheduled')
@@ -129,7 +129,7 @@ describe EasyPost::Services::Pickup do
 
       cancelled_pickup = client.pickup.cancel(bought_pickup.id)
 
-      expect(cancelled_pickup).to be_an_instance_of(EasyPost::Models::Pickup)
+      expect(cancelled_pickup).to be_an_instance_of(EasyPostV5::Models::Pickup)
       expect(cancelled_pickup.id).to match('pickup_')
       expect(cancelled_pickup.status).to eq('canceled')
     end
@@ -153,12 +153,12 @@ describe EasyPost::Services::Pickup do
       # Test lowest rate with service filter (should error due to bad service)
       expect {
         pickup.lowest_rate([], ['BAD SERVICE'])
-      }.to raise_error(EasyPost::Errors::FilteringError, EasyPost::Constants::NO_MATCHING_RATES)
+      }.to raise_error(EasyPostV5::Errors::FilteringError, EasyPostV5::Constants::NO_MATCHING_RATES)
 
       # Test lowest rate with carrier filter (should error due to bad carrier)
       expect {
         pickup.lowest_rate(['BAD CARRIER'], [])
-      }.to raise_error(EasyPost::Errors::FilteringError, EasyPost::Constants::NO_MATCHING_RATES)
+      }.to raise_error(EasyPostV5::Errors::FilteringError, EasyPostV5::Constants::NO_MATCHING_RATES)
     end
   end
 end

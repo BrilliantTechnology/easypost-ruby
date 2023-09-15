@@ -4,7 +4,7 @@ require 'spec_helper'
 require 'faraday'
 require 'typhoeus'
 
-describe EasyPost::Client do
+describe EasyPostV5::Client do
   describe 'client object' do
     it 'create a client object timeouts' do
       client = described_class.new(api_key: 'fake_api_key', read_timeout: 10, open_timeout: 1)
@@ -22,8 +22,8 @@ describe EasyPost::Client do
       expect {
         described_class.new(api_key: nil)
       }.to raise_error(
-        EasyPost::Errors::MissingParameterError,
-        EasyPost::Constants::MISSING_REQUIRED_PARAMETER % 'api_key',
+        EasyPostV5::Errors::MissingParameterError,
+        EasyPostV5::Constants::MISSING_REQUIRED_PARAMETER % 'api_key',
       )
     end
 
@@ -32,7 +32,7 @@ describe EasyPost::Client do
 
       expect {
         client.address.create(Fixture.ca_address1)
-      }.to raise_error(EasyPost::Errors::TimeoutError)
+      }.to raise_error(EasyPostV5::Errors::TimeoutError)
     end
 
     it 'create a client with open timeout' do
@@ -40,7 +40,7 @@ describe EasyPost::Client do
 
       expect {
         client.address.create(Fixture.ca_address1)
-      }.to raise_error(EasyPost::Errors::TimeoutError)
+      }.to raise_error(EasyPostV5::Errors::TimeoutError)
     end
 
     it 'calls custom client exec' do
@@ -59,7 +59,7 @@ describe EasyPost::Client do
 
       expect {
         client.address.retrieve('adr_123')
-      }.to raise_error(EasyPost::Errors::UnauthorizedError) # should throw error because our lambda returns 401
+      }.to raise_error(EasyPostV5::Errors::UnauthorizedError) # should throw error because our lambda returns 401
     end
 
     it 'allows Faraday to be used as a custom client' do
@@ -84,7 +84,7 @@ describe EasyPost::Client do
 
       expect {
         client.address.retrieve('adr_123')
-      }.to raise_error(EasyPost::Errors::NotFoundError) # should throw error because our lambda returns 404
+      }.to raise_error(EasyPostV5::Errors::NotFoundError) # should throw error because our lambda returns 404
     end
 
     it 'allows Typhoeus to be used as a custom client' do
@@ -113,17 +113,17 @@ describe EasyPost::Client do
 
       expect {
         client.address.retrieve('adr_123')
-      }.to raise_error(EasyPost::Errors::NotFoundError) # should throw error because our lambda returns 404
+      }.to raise_error(EasyPostV5::Errors::NotFoundError) # should throw error because our lambda returns 404
     end
 
     describe 'hooks' do
-      after { EasyPost::Hooks.send(:subscribers).clear }
+      after { EasyPostV5::Hooks.send(:subscribers).clear }
 
       it 'subscribes to request events' do
         notifications = []
         client = described_class.new(api_key: ENV['EASYPOST_TEST_API_KEY'])
         client.subscribe_request_hook do |request_data|
-          expect(request_data).to be_an(EasyPost::Hooks::RequestContext)
+          expect(request_data).to be_an(EasyPostV5::Hooks::RequestContext)
           expect(request_data.method).to eq(:get)
           expect(request_data.path).to end_with('/addresses/adr_123')
           expect(request_data.headers['Content-Type']).to eq('application/json')
@@ -133,12 +133,12 @@ describe EasyPost::Client do
           expect(request_data.request_uuid).to be_a(String)
           notifications << request_data
         end
-        expect(EasyPost::Hooks.any_subscribers?(:request)).to eq(true)
-        expect(EasyPost::Hooks.any_subscribers?(:response)).to eq(false)
+        expect(EasyPostV5::Hooks.any_subscribers?(:request)).to eq(true)
+        expect(EasyPostV5::Hooks.any_subscribers?(:response)).to eq(false)
 
         expect {
           client.address.retrieve('adr_123')
-        }.to raise_error(EasyPost::Errors::NotFoundError) # Address doesn't exist
+        }.to raise_error(EasyPostV5::Errors::NotFoundError) # Address doesn't exist
 
         expect(notifications.size).to eq(1)
       end
@@ -150,7 +150,7 @@ describe EasyPost::Client do
         response_notifications = []
         client = described_class.new(api_key: ENV['EASYPOST_TEST_API_KEY'])
         client.subscribe_request_hook do |request_data|
-          expect(request_data).to be_an(EasyPost::Hooks::RequestContext)
+          expect(request_data).to be_an(EasyPostV5::Hooks::RequestContext)
           expect(request_data.method).to eq(:post)
           expect(request_data.path).to end_with('/addresses')
           expect(request_data.headers['Content-Type']).to eq('application/json')
@@ -161,7 +161,7 @@ describe EasyPost::Client do
           request_notifications << request_data
         end
         client.subscribe_response_hook do |response_data|
-          expect(response_data).to be_an(EasyPost::Hooks::ResponseContext)
+          expect(response_data).to be_an(EasyPostV5::Hooks::ResponseContext)
           expect(response_data.http_status).to eq(201)
           expect(response_data.method).to eq(:post)
           expect(response_data.path).to end_with('/addresses')
@@ -174,11 +174,11 @@ describe EasyPost::Client do
           expect(response_data.request_uuid).to eq(lifecycle_request_uuid)
           response_notifications << response_data
         end
-        expect(EasyPost::Hooks.any_subscribers?(:request)).to eq(true)
-        expect(EasyPost::Hooks.any_subscribers?(:response)).to eq(true)
+        expect(EasyPostV5::Hooks.any_subscribers?(:request)).to eq(true)
+        expect(EasyPostV5::Hooks.any_subscribers?(:response)).to eq(true)
 
         address = client.address.create(address_to_create)
-        expect(address).to be_an(EasyPost::Models::Address)
+        expect(address).to be_an(EasyPostV5::Models::Address)
         expect(request_notifications.size).to eq(1)
         expect(response_notifications.size).to eq(1)
       end
@@ -196,12 +196,12 @@ describe EasyPost::Client do
         client.subscribe_response_hook(&response_notifier)
         client.subscribe_response_hook(&response_notifier)
 
-        expect(EasyPost::Hooks.any_subscribers?(:request)).to eq(true)
-        expect(EasyPost::Hooks.any_subscribers?(:response)).to eq(true)
+        expect(EasyPostV5::Hooks.any_subscribers?(:request)).to eq(true)
+        expect(EasyPostV5::Hooks.any_subscribers?(:response)).to eq(true)
 
         expect {
           client.address.retrieve('adr_123')
-        }.to raise_error(EasyPost::Errors::NotFoundError) # Address doesn't exist
+        }.to raise_error(EasyPostV5::Errors::NotFoundError) # Address doesn't exist
 
         expect(request_notifications.size).to eq(3)
         expect(response_notifications.size).to eq(2)
@@ -217,19 +217,19 @@ describe EasyPost::Client do
         request_notifier_name = client.subscribe_request_hook(&request_notifier)
         response_notifier_name = client.subscribe_response_hook(&response_notifier)
 
-        expect(EasyPost::Hooks.any_subscribers?(:request)).to eq(true)
-        expect(EasyPost::Hooks.any_subscribers?(:response)).to eq(true)
+        expect(EasyPostV5::Hooks.any_subscribers?(:request)).to eq(true)
+        expect(EasyPostV5::Hooks.any_subscribers?(:response)).to eq(true)
         expect(client.unsubscribe_request_hook(request_notifier_name)).to eq(request_notifier)
         expect(client.unsubscribe_response_hook(response_notifier_name)).to eq(response_notifier)
 
         expect {
           client.address.retrieve('adr_123')
-        }.to raise_error(EasyPost::Errors::NotFoundError) # Address doesn't exist
+        }.to raise_error(EasyPostV5::Errors::NotFoundError) # Address doesn't exist
 
         expect(request_notifications).to be_empty
         expect(response_notifications).to be_empty
-        expect(EasyPost::Hooks.any_subscribers?(:request)).to eq(false)
-        expect(EasyPost::Hooks.any_subscribers?(:response)).to eq(false)
+        expect(EasyPostV5::Hooks.any_subscribers?(:request)).to eq(false)
+        expect(EasyPostV5::Hooks.any_subscribers?(:response)).to eq(false)
       end
     end
   end

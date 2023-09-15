@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-describe EasyPost::Services::Address do
-  let(:client) { EasyPost::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
+describe EasyPostV5::Services::Address do
+  let(:client) { EasyPostV5::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
 
   describe 'address service' do
     it 'creates an address' do
@@ -11,7 +11,7 @@ describe EasyPost::Services::Address do
 
       expect(address.id).to match('adr_')
       expect(address.street1).to eq('388 Townsend St')
-      expect(address).to be_an_instance_of(EasyPost::Models::Address)
+      expect(address).to be_an_instance_of(EasyPostV5::Models::Address)
     end
 
     it 'creates an address with verify param' do
@@ -21,7 +21,7 @@ describe EasyPost::Services::Address do
 
       address = client.address.create(address_data)
 
-      expect(address).to be_an_instance_of(EasyPost::Models::Address)
+      expect(address).to be_an_instance_of(EasyPostV5::Models::Address)
       expect(address.id).to match('adr_')
       expect(address.street1).to eq('417 MONTGOMERY ST FL 5')
       expect(address.verifications.zip4.errors[0].message).to eq('Invalid secondary information(Apt/Suite#)')
@@ -33,7 +33,7 @@ describe EasyPost::Services::Address do
 
       address = client.address.create(address_data)
 
-      expect(address).to be_an_instance_of(EasyPost::Models::Address)
+      expect(address).to be_an_instance_of(EasyPostV5::Models::Address)
       expect(address.id).to match('adr_')
       expect(address.street1).to eq('388 TOWNSEND ST APT 20')
     end
@@ -45,7 +45,7 @@ describe EasyPost::Services::Address do
 
       address = client.address.create(address_data)
 
-      expect(address).to be_an_instance_of(EasyPost::Models::Address)
+      expect(address).to be_an_instance_of(EasyPostV5::Models::Address)
       expect(address.id).to match('adr_')
       expect(address.street1).to eq('417 MONTGOMERY ST FL 5')
       expect(address.verifications.zip4.errors[0].message).to eq('Invalid secondary information(Apt/Suite#)')
@@ -57,7 +57,7 @@ describe EasyPost::Services::Address do
       address = client.address.create(Fixture.ca_address1)
       retrieved_address = client.address.retrieve(address.id)
 
-      expect(retrieved_address).to be_an_instance_of(EasyPost::Models::Address)
+      expect(retrieved_address).to be_an_instance_of(EasyPostV5::Models::Address)
       expect(retrieved_address.id.to_s).to eq(address.id.to_s)
     end
   end
@@ -71,7 +71,7 @@ describe EasyPost::Services::Address do
       addresses_array = addresses.addresses
       expect(addresses_array.count).to be <= Fixture.page_size
       expect(addresses.has_more).not_to be_nil
-      expect(addresses_array).to all(be_an_instance_of(EasyPost::Models::Address))
+      expect(addresses_array).to all(be_an_instance_of(EasyPostV5::Models::Address))
     end
   end
 
@@ -89,9 +89,9 @@ describe EasyPost::Services::Address do
 
         # Did we actually get a new page?
         expect(first_page_first_id).not_to eq(next_page_first_id)
-      rescue EasyPost::Errors::EndOfPaginationError => e
+      rescue EasyPostV5::Errors::EndOfPaginationError => e
         # If we get an error, make sure it's because there are no more pages.
-        expect(e.message).to eq(EasyPost::Constants::NO_MORE_PAGES)
+        expect(e.message).to eq(EasyPostV5::Constants::NO_MORE_PAGES)
       end
     end
   end
@@ -101,7 +101,7 @@ describe EasyPost::Services::Address do
       # We purposefully pass in slightly incorrect data to get the corrected address back once verified.
       address = client.address.create_and_verify(Fixture.incorrect_address)
 
-      expect(address).to be_an_instance_of(EasyPost::Models::Address)
+      expect(address).to be_an_instance_of(EasyPostV5::Models::Address)
       expect(address.id).to match('adr_')
       expect(address.street1).to eq('417 MONTGOMERY ST FL 5')
     end
@@ -113,7 +113,7 @@ describe EasyPost::Services::Address do
       address = client.address.create(Fixture.incorrect_address)
       verified_address = client.address.verify(address.id)
 
-      expect(verified_address).to be_an_instance_of(EasyPost::Models::Address)
+      expect(verified_address).to be_an_instance_of(EasyPostV5::Models::Address)
       expect(verified_address.id).to match('adr_')
       expect(verified_address.street1).to eq('417 MONTGOMERY ST FL 5')
     end
@@ -121,7 +121,7 @@ describe EasyPost::Services::Address do
     it 'throws an error for invalid address verification' do
       address = client.address.create(street1: 'invalid')
       client.address.verify(address.id)
-    rescue EasyPost::Errors::InvalidRequestError => e
+    rescue EasyPostV5::Errors::InvalidRequestError => e
       expect(e.message).to eq('Unable to verify address.')
     end
   end

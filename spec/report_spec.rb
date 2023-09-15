@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-describe EasyPost::Services::Report do
-  let(:client) { EasyPost::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
+describe EasyPostV5::Services::Report do
+  let(:client) { EasyPostV5::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
 
   describe '.create' do
     it 'creates a report' do
@@ -13,7 +13,7 @@ describe EasyPost::Services::Report do
         type: Fixture.report_type,
       )
 
-      expect(report).to be_an_instance_of(EasyPost::Models::Report)
+      expect(report).to be_an_instance_of(EasyPostV5::Models::Report)
       expect(report.id).to match('shprep')
     end
 
@@ -27,7 +27,7 @@ describe EasyPost::Services::Report do
 
       # verify params by checking URL in cassette
       # can't do any more verification without downloading CSV
-      expect(report).to be_an_instance_of(EasyPost::Models::Report)
+      expect(report).to be_an_instance_of(EasyPostV5::Models::Report)
     end
 
     it 'creates a report with custom additional columns' do
@@ -40,7 +40,7 @@ describe EasyPost::Services::Report do
 
       # verify params by checking URL in cassette
       # can't do any more verification without downloading CSV
-      expect(report).to be_an_instance_of(EasyPost::Models::Report)
+      expect(report).to be_an_instance_of(EasyPostV5::Models::Report)
     end
   end
 
@@ -54,7 +54,7 @@ describe EasyPost::Services::Report do
 
       retrieved_report = client.report.retrieve(report.id)
 
-      expect(retrieved_report).to be_an_instance_of(EasyPost::Models::Report)
+      expect(retrieved_report).to be_an_instance_of(EasyPostV5::Models::Report)
       expect(retrieved_report.start_date).to eq(report.start_date)
       expect(retrieved_report.end_date).to eq(report.end_date)
     end
@@ -71,7 +71,7 @@ describe EasyPost::Services::Report do
 
       expect(reports_array.count).to be <= Fixture.page_size
       expect(reports.has_more).not_to be_nil
-      expect(reports_array).to all(be_an_instance_of(EasyPost::Models::Report))
+      expect(reports_array).to all(be_an_instance_of(EasyPostV5::Models::Report))
     end
   end
 
@@ -90,9 +90,9 @@ describe EasyPost::Services::Report do
 
         # Did we actually get a new page?
         expect(first_page_first_id).not_to eq(next_page_first_id)
-      rescue EasyPost::Errors::EndOfPaginationError => e
+      rescue EasyPostV5::Errors::EndOfPaginationError => e
         # If we get an error, make sure it's because there are no more pages.
-        expect(e.message).to eq(EasyPost::Constants::NO_MORE_PAGES)
+        expect(e.message).to eq(EasyPostV5::Constants::NO_MORE_PAGES)
       end
     end
   end

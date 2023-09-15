@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-describe EasyPost::Services::ScanForm do
-  let(:client) { EasyPost::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
+describe EasyPostV5::Services::ScanForm do
+  let(:client) { EasyPostV5::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
 
   describe '.create' do
     it 'creates a scanform' do
@@ -13,7 +13,7 @@ describe EasyPost::Services::ScanForm do
         shipments: [shipment],
       )
 
-      expect(scan_form).to be_an_instance_of(EasyPost::Models::ScanForm)
+      expect(scan_form).to be_an_instance_of(EasyPostV5::Models::ScanForm)
       expect(scan_form.id).to match('sf_')
     end
   end
@@ -28,7 +28,7 @@ describe EasyPost::Services::ScanForm do
 
       retrieved_scan_form = client.scan_form.retrieve(scan_form.id)
 
-      expect(retrieved_scan_form).to be_an_instance_of(EasyPost::Models::ScanForm)
+      expect(retrieved_scan_form).to be_an_instance_of(EasyPostV5::Models::ScanForm)
       expect(retrieved_scan_form.to_s).to eq(scan_form.to_s)
     end
   end
@@ -43,7 +43,7 @@ describe EasyPost::Services::ScanForm do
 
       expect(scan_forms_array.count).to be <= Fixture.page_size
       expect(scan_forms.has_more).not_to be_nil
-      expect(scan_forms_array).to all(be_an_instance_of(EasyPost::Models::ScanForm))
+      expect(scan_forms_array).to all(be_an_instance_of(EasyPostV5::Models::ScanForm))
     end
   end
 
@@ -61,9 +61,9 @@ describe EasyPost::Services::ScanForm do
 
         # Did we actually get a new page?
         expect(first_page_first_id).not_to eq(next_page_first_id)
-      rescue EasyPost::Errors::EndOfPaginationError => e
+      rescue EasyPostV5::Errors::EndOfPaginationError => e
         # If we get an error, make sure it's because there are no more pages.
-        expect(e.message).to eq(EasyPost::Constants::NO_MORE_PAGES)
+        expect(e.message).to eq(EasyPostV5::Constants::NO_MORE_PAGES)
       end
     end
   end

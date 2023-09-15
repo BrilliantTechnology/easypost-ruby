@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-describe EasyPost::Services::Order do
-  let(:client) { EasyPost::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
+describe EasyPostV5::Services::Order do
+  let(:client) { EasyPostV5::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
 
   describe '.create' do
     it 'creates an order' do
       order = client.order.create(Fixture.basic_order)
 
-      expect(order).to be_an_instance_of(EasyPost::Models::Order)
+      expect(order).to be_an_instance_of(EasyPostV5::Models::Order)
       expect(order.id).to match('order_')
       expect(order.rates).not_to be_nil
     end
@@ -20,7 +20,7 @@ describe EasyPost::Services::Order do
       order = client.order.create(Fixture.basic_order)
       retrieved_order = client.order.retrieve(order.id)
 
-      expect(retrieved_order).to be_an_instance_of(EasyPost::Models::Order)
+      expect(retrieved_order).to be_an_instance_of(EasyPostV5::Models::Order)
       expect(retrieved_order.id).to eq(order.id)
     end
   end
@@ -33,7 +33,7 @@ describe EasyPost::Services::Order do
       rates_array = rates.rates
 
       expect(rates_array).to be_an_instance_of(Array)
-      expect(rates_array).to all(be_an_instance_of(EasyPost::Models::Rate))
+      expect(rates_array).to all(be_an_instance_of(EasyPostV5::Models::Rate))
     end
   end
 
@@ -88,7 +88,7 @@ describe EasyPost::Services::Order do
       # Test lowest rate with carrier filter (should error due to bad carrier)
       expect {
         shipment.lowest_rate(['BAD CARRIER'], [])
-      }.to raise_error(EasyPost::Errors::FilteringError, EasyPost::Constants::NO_MATCHING_RATES)
+      }.to raise_error(EasyPostV5::Errors::FilteringError, EasyPostV5::Constants::NO_MATCHING_RATES)
     end
   end
 end

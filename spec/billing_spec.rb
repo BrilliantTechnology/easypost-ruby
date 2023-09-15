@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-describe EasyPost::Services::Billing do
-  let(:client) { EasyPost::Client.new(api_key: ENV['EASYPOST_PROD_API_KEY']) }
+describe EasyPostV5::Services::Billing do
+  let(:client) { EasyPostV5::Client.new(api_key: ENV['EASYPOST_PROD_API_KEY']) }
 
   describe '.fund_wallet' do
     it 'fund wallet by using a payment method' do
       allow(described_class).to receive(:get_payment_method_info).and_return(['/credit_cards', 'cc_123'])
       allow(client).to receive(:make_request).with(
-        :post, '/credit_cards/cc_123/charges', EasyPost::Models::EasyPostObject, { amount: '2000' },
+        :post, '/credit_cards/cc_123/charges', EasyPostV5::Models::EasyPostObject, { amount: '2000' },
       )
 
       credit_card = client.billing.fund_wallet('2000', 'primary')

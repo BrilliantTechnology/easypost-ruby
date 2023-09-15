@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-describe EasyPost::Services::Webhook do
-  let(:client) { EasyPost::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
+describe EasyPostV5::Services::Webhook do
+  let(:client) { EasyPostV5::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
 
   describe '.create' do
     it 'creates a webhook' do
@@ -11,7 +11,7 @@ describe EasyPost::Services::Webhook do
         url: Fixture.webhook_url,
       )
 
-      expect(webhook).to be_an_instance_of(EasyPost::Models::Webhook)
+      expect(webhook).to be_an_instance_of(EasyPostV5::Models::Webhook)
       expect(webhook.id).to match('hook_')
       expect(webhook.url).to eq(Fixture.webhook_url)
 
@@ -28,7 +28,7 @@ describe EasyPost::Services::Webhook do
 
       retrieved_webhook = client.webhook.retrieve(webhook.id)
 
-      expect(retrieved_webhook).to be_an_instance_of(EasyPost::Models::Webhook)
+      expect(retrieved_webhook).to be_an_instance_of(EasyPostV5::Models::Webhook)
       expect(retrieved_webhook.to_s).to eq(webhook.to_s)
 
       # Remove the webhook once we have tested it so we don't pollute the account with test webhooks
@@ -45,7 +45,7 @@ describe EasyPost::Services::Webhook do
       webhooks_array = webhooks.webhooks
 
       expect(webhooks_array.count).to be <= Fixture.page_size
-      expect(webhooks_array).to all(be_an_instance_of(EasyPost::Models::Webhook))
+      expect(webhooks_array).to all(be_an_instance_of(EasyPostV5::Models::Webhook))
     end
   end
 
@@ -57,7 +57,7 @@ describe EasyPost::Services::Webhook do
 
       updated_webhook = client.webhook.update(webhook.id)
 
-      expect(updated_webhook).to be_an_instance_of(EasyPost::Models::Webhook)
+      expect(updated_webhook).to be_an_instance_of(EasyPostV5::Models::Webhook)
 
       client.webhook.delete(webhook.id) # Remove the webhook once we have tested it so we don't pollute the account with test webhooks
     end
@@ -81,7 +81,7 @@ describe EasyPost::Services::Webhook do
         'X-Hmac-Signature' => expected_hmac_signature,
       }
 
-      webhook_body = EasyPost::Util.validate_webhook(Fixture.event_bytes, headers, webhook_secret)
+      webhook_body = EasyPostV5::Util.validate_webhook(Fixture.event_bytes, headers, webhook_secret)
       expect(webhook_body['description']).to eq('batch.created')
     end
 
@@ -92,10 +92,10 @@ describe EasyPost::Services::Webhook do
       }
 
       expect {
-        EasyPost::Util.validate_webhook(Fixture.event_bytes, headers, webhook_secret)
+        EasyPostV5::Util.validate_webhook(Fixture.event_bytes, headers, webhook_secret)
       }.to raise_error(
-        EasyPost::Errors::SignatureVerificationError,
-        EasyPost::Constants::WEBHOOK_SIGNATURE_MISMATCH,
+        EasyPostV5::Errors::SignatureVerificationError,
+        EasyPostV5::Constants::WEBHOOK_SIGNATURE_MISMATCH,
       )
     end
 
@@ -106,10 +106,10 @@ describe EasyPost::Services::Webhook do
       }
 
       expect {
-        EasyPost::Util.validate_webhook(Fixture.event_bytes, headers, webhook_secret)
+        EasyPostV5::Util.validate_webhook(Fixture.event_bytes, headers, webhook_secret)
       }.to raise_error(
-        EasyPost::Errors::SignatureVerificationError,
-        EasyPost::Constants::WEBHOOK_MISSING_SIGNATURE,
+        EasyPostV5::Errors::SignatureVerificationError,
+        EasyPostV5::Constants::WEBHOOK_MISSING_SIGNATURE,
       )
     end
   end

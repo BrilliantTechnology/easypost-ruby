@@ -15,9 +15,9 @@ class Fixture
     read_fixture_data['page_sizes']['five_results']
   end
 
-  # This is the USPS carrier account ID that comes with your EasyPost account by default and should be used for all tests
+  # This is the USPS carrier account ID that comes with your EasyPostV5 account by default and should be used for all tests
   def self.usps_carrier_account_id
-    # Fallback to the EasyPost Ruby Client Library Test User USPS carrier account ID due to strict matching
+    # Fallback to the EasyPostV5 Ruby Client Library Test User USPS carrier account ID due to strict matching
     ENV['USPS_CARRIER_ACCOUNT_ID'] || 'ca_716f33fd9fd348238b85c2922237f98b'
   end
 

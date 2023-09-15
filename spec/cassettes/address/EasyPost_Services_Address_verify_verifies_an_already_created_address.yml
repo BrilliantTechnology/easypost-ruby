@@ -5,7 +5,7 @@ http_interactions:
     uri: https://api.easypost.com/v2/addresses
     body:
       encoding: UTF-8
-      string: '{"company":"EasyPost","street1":"417 montgomery street","street2":"FL
+      string: '{"company":"EasyPostV5","street1":"417 montgomery street","street2":"FL
         5","city":"San Francisco","state":"CA","zip":"94104","country":"US","email":"test@example.com","phone":"5555555555"}'
     headers:
       Accept-Encoding:
@@ -67,7 +67,7 @@ http_interactions:
       - max-age=31536000; includeSubDomains; preload
     body:
       encoding: UTF-8
-      string: '{"id":"adr_745a3c37f4ea11edafaeac1f6b0a0d1e","object":"Address","created_at":"2023-05-17T19:38:52+00:00","updated_at":"2023-05-17T19:38:52+00:00","name":null,"company":"EasyPost","street1":"417
+      string: '{"id":"adr_745a3c37f4ea11edafaeac1f6b0a0d1e","object":"Address","created_at":"2023-05-17T19:38:52+00:00","updated_at":"2023-05-17T19:38:52+00:00","name":null,"company":"EasyPostV5","street1":"417
         montgomery street","street2":"FL 5","city":"San Francisco","state":"CA","zip":"94104","country":"US","phone":"<REDACTED>","email":"<REDACTED>","mode":"test","carrier_facility":null,"residential":null,"federal_tax_id":null,"state_tax_id":null,"verifications":{}}'
   recorded_at: Wed, 17 May 2023 19:38:52 GMT
 - request:

@@ -4,8 +4,8 @@ require 'spec_helper'
 
 REFERRAL_CUSTOMER_PROD_API_KEY = ENV['REFERRAL_CUSTOMER_PROD_API_KEY'] || '123'
 
-describe EasyPost::Services::BetaReferralCustomer do
-  let(:client) { EasyPost::Client.new(api_key: ENV['PARTNER_USER_PROD_API_KEY'] || '123') }
+describe EasyPostV5::Services::BetaReferralCustomer do
+  let(:client) { EasyPostV5::Client.new(api_key: ENV['PARTNER_USER_PROD_API_KEY'] || '123') }
 
   describe '.add_payment_method' do
     it 'adds a Stripe card or bank account to a referral customer account' do
@@ -15,7 +15,7 @@ describe EasyPost::Services::BetaReferralCustomer do
           'cus_123',
           'ba_123',
         )
-      }.to raise_error(EasyPost::Errors::EasyPostError).with_message('Invalid Payment Gateway Reference.')
+      }.to raise_error(EasyPostV5::Errors::EasyPostError).with_message('Invalid Payment Gateway Reference.')
     end
   end
 
@@ -26,7 +26,7 @@ describe EasyPost::Services::BetaReferralCustomer do
         client.beta_referral_customer.refund_by_amount(
           2000,
         )
-      }.to raise_error(EasyPost::Errors::EasyPostError).with_message(
+      }.to raise_error(EasyPostV5::Errors::EasyPostError).with_message(
         'Refund amount is invalid. Please use a valid amount or escalate to finance.',
       )
     end
@@ -39,7 +39,7 @@ describe EasyPost::Services::BetaReferralCustomer do
         client.beta_referral_customer.refund_by_payment_log(
           'paylog_123',
         )
-      }.to raise_error(EasyPost::Errors::EasyPostError).with_message(
+      }.to raise_error(EasyPostV5::Errors::EasyPostError).with_message(
         'We could not find a transaction with that id.',
       )
     end

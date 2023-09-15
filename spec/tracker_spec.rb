@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-describe EasyPost::Services::Tracker do
-  let(:client) { EasyPost::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
+describe EasyPostV5::Services::Tracker do
+  let(:client) { EasyPostV5::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
 
   describe '.create' do
     it 'creates a tracker' do
@@ -11,7 +11,7 @@ describe EasyPost::Services::Tracker do
         tracking_code: 'EZ1000000001',
       )
 
-      expect(tracker).to be_an_instance_of(EasyPost::Models::Tracker)
+      expect(tracker).to be_an_instance_of(EasyPostV5::Models::Tracker)
       expect(tracker.id).to match('trk_')
       expect(tracker.status).to eq('pre_transit')
     end
@@ -25,7 +25,7 @@ describe EasyPost::Services::Tracker do
 
       retrieved_tracker = client.tracker.retrieve(tracker.id)
 
-      expect(retrieved_tracker).to be_an_instance_of(EasyPost::Models::Tracker)
+      expect(retrieved_tracker).to be_an_instance_of(EasyPostV5::Models::Tracker)
       expect(retrieved_tracker.id).to eq(tracker.id)
     end
   end
@@ -40,7 +40,7 @@ describe EasyPost::Services::Tracker do
 
       expect(trackers_array.count).to be <= Fixture.page_size
       expect(trackers.has_more).not_to be_nil
-      expect(trackers_array).to all(be_an_instance_of(EasyPost::Models::Tracker))
+      expect(trackers_array).to all(be_an_instance_of(EasyPostV5::Models::Tracker))
     end
 
     it 'stores the params used to retrieve the trackers' do
@@ -72,9 +72,9 @@ describe EasyPost::Services::Tracker do
 
         # Did we actually get a new page?
         expect(first_page_first_id).not_to eq(next_page_first_id)
-      rescue EasyPost::Errors::EndOfPaginationError => e
+      rescue EasyPostV5::Errors::EndOfPaginationError => e
         # If we get an error, make sure it's because there are no more pages.
-        expect(e.message).to eq(EasyPost::Constants::NO_MORE_PAGES)
+        expect(e.message).to eq(EasyPostV5::Constants::NO_MORE_PAGES)
       end
     end
   end

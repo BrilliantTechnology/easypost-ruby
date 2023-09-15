@@ -4,8 +4,8 @@ require 'spec_helper'
 
 REFERRAL_CUSTOMER_PROD_API_KEY = ENV['REFERRAL_CUSTOMER_PROD_API_KEY'] || '123'
 
-describe EasyPost::Services::ReferralCustomer do
-  let(:client) { EasyPost::Client.new(api_key: ENV['PARTNER_USER_PROD_API_KEY'] || '123') }
+describe EasyPostV5::Services::ReferralCustomer do
+  let(:client) { EasyPostV5::Client.new(api_key: ENV['PARTNER_USER_PROD_API_KEY'] || '123') }
 
   describe '.create' do
     it 'creates a referral customer' do
@@ -16,7 +16,7 @@ describe EasyPost::Services::ReferralCustomer do
         phone: '8888888888',
       )
 
-      expect(created_referral_customer).to be_an_instance_of(EasyPost::Models::User)
+      expect(created_referral_customer).to be_an_instance_of(EasyPostV5::Models::User)
       expect(created_referral_customer.id).to match('user_')
       expect(created_referral_customer.name).to eq('test user')
     end
@@ -49,7 +49,7 @@ describe EasyPost::Services::ReferralCustomer do
 
       expect(referral_customers_array.count).to be <= Fixture.page_size
       expect(referral_customers.has_more).not_to be_nil
-      expect(referral_customers_array).to all(be_an_instance_of(EasyPost::Models::User))
+      expect(referral_customers_array).to all(be_an_instance_of(EasyPostV5::Models::User))
     end
   end
 
@@ -67,9 +67,9 @@ describe EasyPost::Services::ReferralCustomer do
 
         # Did we actually get a new page?
         expect(first_page_first_id).not_to eq(next_page_first_id)
-      rescue EasyPost::Errors::EndOfPaginationError => e
+      rescue EasyPostV5::Errors::EndOfPaginationError => e
         # If we get an error, make sure it's because there are no more pages.
-        expect(e.message).to eq(EasyPost::Constants::NO_MORE_PAGES)
+        expect(e.message).to eq(EasyPostV5::Constants::NO_MORE_PAGES)
       end
     end
   end

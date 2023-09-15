@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-describe EasyPost::Services::CarrierMetadata do
-  let(:client) { EasyPost::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
+describe EasyPostV5::Services::CarrierMetadata do
+  let(:client) { EasyPostV5::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
 
   describe '.retrieve_carrier_metadata' do
     it 'retrieve metadata for all carriers' do

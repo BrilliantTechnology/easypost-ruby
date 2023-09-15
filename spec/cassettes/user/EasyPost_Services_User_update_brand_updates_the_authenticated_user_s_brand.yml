@@ -132,6 +132,6 @@ http_interactions:
       - max-age=31536000; includeSubDomains; preload
     body:
       encoding: UTF-8
-      string: '{"id":"brd_136abcc3c9de49fcb1a0e963f26fdcac","color":"#123456","logo":"https://assets.easypost.com/assets/images/branding/easypost-primary-logo.7324aa54b64b34d6cd70ca5ba4d1842d.svg","logo_href":"https://www.easypost.com","name":"EasyPost","ad":null,"ad_href":null,"object":"Brand","user_id":"user_0f6b83e3530b401cb1e8aeaa6a250d4d","background_color":null,"theme":"theme1"}'
+      string: '{"id":"brd_136abcc3c9de49fcb1a0e963f26fdcac","color":"#123456","logo":"https://assets.easypost.com/assets/images/branding/easypost-primary-logo.7324aa54b64b34d6cd70ca5ba4d1842d.svg","logo_href":"https://www.easypost.com","name":"EasyPostV5","ad":null,"ad_href":null,"object":"Brand","user_id":"user_0f6b83e3530b401cb1e8aeaa6a250d4d","background_color":null,"theme":"theme1"}'
   recorded_at: Wed, 17 May 2023 19:42:24 GMT
 recorded_with: VCR 6.1.0

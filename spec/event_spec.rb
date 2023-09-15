@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-describe EasyPost::Services::Event do
-  let(:client) { EasyPost::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
+describe EasyPostV5::Services::Event do
+  let(:client) { EasyPostV5::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
 
   describe '.retrieve' do
     it 'retrieves an event' do
@@ -13,7 +13,7 @@ describe EasyPost::Services::Event do
 
       retrieved_event = client.event.retrieve(events.events[0].id)
 
-      expect(retrieved_event).to be_an_instance_of(EasyPost::Models::Event)
+      expect(retrieved_event).to be_an_instance_of(EasyPostV5::Models::Event)
       expect(retrieved_event.id).to match('evt_')
     end
   end
@@ -28,7 +28,7 @@ describe EasyPost::Services::Event do
 
       expect(events_array.count).to be <= Fixture.page_size
       expect(events.has_more).not_to be_nil
-      expect(events_array).to all(be_an_instance_of(EasyPost::Models::Event))
+      expect(events_array).to all(be_an_instance_of(EasyPostV5::Models::Event))
     end
   end
 
@@ -45,18 +45,18 @@ describe EasyPost::Services::Event do
         next_page_first_id = next_page.events.first.id
 
         expect(first_page_first_id).not_to eq(next_page_first_id)
-      rescue EasyPost::Errors::EndOfPaginationError => e
+      rescue EasyPostV5::Errors::EndOfPaginationError => e
         # If we get an error, make sure it's because there are no more pages.
-        expect(e.message).to eq(EasyPost::Constants::NO_MORE_PAGES)
+        expect(e.message).to eq(EasyPostV5::Constants::NO_MORE_PAGES)
       end
     end
   end
 
   describe '.receive' do
     it 'receives (converts) an event' do
-      event = EasyPost::Util.receive_event(Fixture.event_json)
+      event = EasyPostV5::Util.receive_event(Fixture.event_json)
 
-      expect(event).to be_an_instance_of(EasyPost::Models::EasyPostObject)
+      expect(event).to be_an_instance_of(EasyPostV5::Models::EasyPostObject)
       expect(event.id).to match('evt_')
     end
   end
@@ -87,7 +87,7 @@ describe EasyPost::Services::Event do
 
       payload_array = payloads.payloads
 
-      expect(payload_array).to all(be_an_instance_of(EasyPost::Models::Payload))
+      expect(payload_array).to all(be_an_instance_of(EasyPostV5::Models::Payload))
 
       client.webhook.delete(webhook.id)
     end
@@ -118,7 +118,7 @@ describe EasyPost::Services::Event do
       begin
         # Payload does not exist due to queueing, so this will throw an exception
         client.event.retrieve_payload(event.id, 'payload_11111111111111111111111111111111')
-      rescue EasyPost::Errors::ApiError => e
+      rescue EasyPostV5::Errors::ApiError => e
         expect(e.status_code).to eq(404)
       end
 

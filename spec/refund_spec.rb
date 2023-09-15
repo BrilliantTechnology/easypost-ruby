@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-describe EasyPost::Services::Refund do
-  let(:client) { EasyPost::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
+describe EasyPostV5::Services::Refund do
+  let(:client) { EasyPostV5::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
 
   describe '.create' do
     it 'creates a refund' do
@@ -30,7 +30,7 @@ describe EasyPost::Services::Refund do
 
       expect(refunds_array.count).to be <= Fixture.page_size
       expect(refunds.has_more).not_to be_nil
-      expect(refunds_array).to all(be_an_instance_of(EasyPost::Models::Refund))
+      expect(refunds_array).to all(be_an_instance_of(EasyPostV5::Models::Refund))
     end
   end
 
@@ -48,9 +48,9 @@ describe EasyPost::Services::Refund do
 
         # Did we actually get a new page?
         expect(first_page_first_id).not_to eq(next_page_first_id)
-      rescue EasyPost::Errors::EndOfPaginationError => e
+      rescue EasyPostV5::Errors::EndOfPaginationError => e
         # If we get an error, make sure it's because there are no more pages.
-        expect(e.message).to eq(EasyPost::Constants::NO_MORE_PAGES)
+        expect(e.message).to eq(EasyPostV5::Constants::NO_MORE_PAGES)
       end
     end
   end
@@ -65,7 +65,7 @@ describe EasyPost::Services::Refund do
 
       retrieved_refund = client.refund.retrieve(refunds_array[0].id)
 
-      expect(retrieved_refund).to be_an_instance_of(EasyPost::Models::Refund)
+      expect(retrieved_refund).to be_an_instance_of(EasyPostV5::Models::Refund)
       expect(retrieved_refund.id).to eq(refunds_array[0].id)
     end
   end

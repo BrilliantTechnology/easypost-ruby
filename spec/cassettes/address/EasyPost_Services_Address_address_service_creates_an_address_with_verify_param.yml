@@ -5,7 +5,7 @@ http_interactions:
     uri: https://api.easypost.com/v2/addresses
     body:
       encoding: UTF-8
-      string: '{"company":"EasyPost","street1":"417 montgomery street","street2":"FL
+      string: '{"company":"EasyPostV5","street1":"417 montgomery street","street2":"FL
         5","city":"San Francisco","state":"CA","zip":"94104","country":"US","email":"test@example.com","phone":"5555555555","verify":true}'
     headers:
       Accept-Encoding:

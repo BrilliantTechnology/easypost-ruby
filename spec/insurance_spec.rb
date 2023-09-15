@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-describe EasyPost::Services::Insurance do
-  let(:client) { EasyPost::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
+describe EasyPostV5::Services::Insurance do
+  let(:client) { EasyPostV5::Client.new(api_key: ENV['EASYPOST_TEST_API_KEY']) }
 
   describe '.create' do
     it 'creates an insurance object' do
@@ -14,7 +14,7 @@ describe EasyPost::Services::Insurance do
 
       insurance = client.insurance.create(insurance_data)
 
-      expect(insurance).to be_an_instance_of(EasyPost::Models::Insurance)
+      expect(insurance).to be_an_instance_of(EasyPostV5::Models::Insurance)
       expect(insurance.id).to match('ins_')
     end
   end
@@ -30,7 +30,7 @@ describe EasyPost::Services::Insurance do
 
       retrieved_insurance = client.insurance.retrieve(insurance.id)
 
-      expect(retrieved_insurance).to be_an_instance_of(EasyPost::Models::Insurance)
+      expect(retrieved_insurance).to be_an_instance_of(EasyPostV5::Models::Insurance)
       expect(retrieved_insurance.id).to eq(insurance.id)
     end
   end
@@ -45,7 +45,7 @@ describe EasyPost::Services::Insurance do
 
       expect(insurance_array.count).to be <= Fixture.page_size
       expect(all_insurances.has_more).not_to be_nil
-      expect(insurance_array).to all(be_an_instance_of(EasyPost::Models::Insurance))
+      expect(insurance_array).to all(be_an_instance_of(EasyPostV5::Models::Insurance))
     end
   end
 
@@ -62,9 +62,9 @@ describe EasyPost::Services::Insurance do
         next_page_first_id = next_page.insurances.first.id
 
         expect(first_page_first_id).not_to eq(next_page_first_id)
-      rescue EasyPost::Errors::EndOfPaginationError => e
+      rescue EasyPostV5::Errors::EndOfPaginationError => e
         # If we get an error, make sure it's because there are no more pages.
-        expect(e.message).to eq(EasyPost::Constants::NO_MORE_PAGES)
+        expect(e.message).to eq(EasyPostV5::Constants::NO_MORE_PAGES)
       end
     end
   end
